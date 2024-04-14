@@ -20,7 +20,9 @@ router.post(
       .not()
       .isEmpty()
       .withMessage("กรุณากรอกรหัสผ่านด้วย")
-      .isLength({ min: 3 })
+      .isLength({
+        min: 3,
+      })
       .withMessage("รหัสผ่านต้อง 3 ตัวอักษรขึ้นไป"),
   ],
   userController.register

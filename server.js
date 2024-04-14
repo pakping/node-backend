@@ -180,7 +180,9 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/info");
 const RoleRouter = require("./routes/rolecompany");
 const chickenHouse = require("./routes/house");
+const eggStorage = require("./routes/eggStorage");
 app.use("/", indexRouter);
 app.use("/info", usersRouter);
 app.use("/chackrole", [passportJWT.isLogin], RoleRouter);
 app.use("/house", [passportJWT.isLogin], chickenHouse);
+app.use("/egg", [passportJWT.isLogin],eggStorage)
