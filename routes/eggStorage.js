@@ -9,5 +9,4 @@ const validateEggSize = require('../middleware/validateEggSize');
 router.post("/", passportJWT.isLogin,validateEggSize, eggStorageController.create);
 router.get("/", passportJWT.isLogin, eggStorageController.getAll);
 router.get("/:date", passportJWT.isLogin, eggStorageController.getByDate);
-
 module.exports = router;

@@ -3,7 +3,7 @@ const router = express.Router();
 const userController = require(`../controllers/userController`);
 const { body } = require("express-validator");
 const passportJWT = require("../middleware/passportJWT");
-
+const checkRole = require("../middleware/checkRole.js");
 router.get("/", [passportJWT.isLogin], userController.index);
 router.post("/login", userController.login);
 router.post(
@@ -29,5 +29,7 @@ router.post(
 );
 
 router.get("/me", [passportJWT.isLogin], userController.me);
-
+router.put("/change-password", [passportJWT.isLogin], userController.changePassword);
+router.post("/reset-password", [passportJWT.isLogin, checkRole.isAdmin], userController.resetPassword);
+router.delete("/del/:userId", [passportJWT.isLogin, checkRole.isAdmin], userController.deleteDataUser); // เพิ่ม middleware isAdmin ที่นี่
 module.exports = router;

@@ -16,7 +16,7 @@ require('dotenv').config();
 // });
 
 // app.get("/users", (req, res, next) => {
-//   connection.query("SELECT * FROM `users`", function (err, results, fields) {
+//   connection.query("SELECT * FROM `daily_egg_storage`", function (err, results, fields) {
 //     if (err) {
 //       console.error("Error querying database:", err);
 //       return res.status(500).json({ error: 'Failed to fetch users' });
@@ -158,10 +158,12 @@ const path = require("path");
 const rateLimit = require("express-rate-limit");
 const passportJWT = require("./middleware/passportJWT");
 const errorHandler = require("./middleware/errorHandler");
+const cronJob = require('./config/cronJob');
 const limiter = rateLimit({
   windowMs: 15 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
 });
+cronJob();
 app.set('trust proxy', 1);
 app.use(limiter);
 app.use(helmet());
@@ -181,8 +183,11 @@ const usersRouter = require("./routes/info");
 const RoleRouter = require("./routes/rolecompany");
 const chickenHouse = require("./routes/house");
 const eggStorage = require("./routes/eggStorage");
+const cronJobRoutes = require('./routes/cronJob');
+
 app.use("/", indexRouter);
 app.use("/info", usersRouter);
 app.use("/chackrole", [passportJWT.isLogin], RoleRouter);
 app.use("/house", [passportJWT.isLogin], chickenHouse);
 app.use("/egg", [passportJWT.isLogin],eggStorage)
+app.use('/cron', cronJobRoutes);

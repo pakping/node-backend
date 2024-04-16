@@ -5,7 +5,8 @@ module.exports = (err, req, res, next) => {
         error: {
             status_code: statusCode,
             message: err.message,
-            validation: err.validation
+            validation: err.validation,
+            
         }
     });
 }
