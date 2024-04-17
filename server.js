@@ -179,15 +179,15 @@ app.use(errorHandler);
 
 // Routes
 const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/info");
+const usersRouter = require("./routes/users");
 const RoleRouter = require("./routes/rolecompany");
 const chickenHouse = require("./routes/house");
 const eggStorage = require("./routes/eggStorage");
 const cronJobRoutes = require('./routes/cronJob');
 
-app.use("/", indexRouter);
-app.use("/info", usersRouter);
-app.use("/chackrole", [passportJWT.isLogin], RoleRouter);
-app.use("/house", [passportJWT.isLogin], chickenHouse);
-app.use("/egg", [passportJWT.isLogin],eggStorage)
-app.use('/cron', cronJobRoutes);
+app.use("/api/", indexRouter);
+app.use("/api/info", usersRouter);
+app.use("/api/chackrole", [passportJWT.isLogin], RoleRouter);
+app.use("/api/house", [passportJWT.isLogin], chickenHouse);
+app.use("/api/egg", [passportJWT.isLogin],eggStorage)
+app.use('/api/cron', cronJobRoutes);

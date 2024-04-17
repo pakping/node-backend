@@ -1,14 +1,9 @@
 // controllers/userController.js
-require('dotenv').config();
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const UserModel = require("../models/userModel");
 const axios = require("axios");
-// const config = {
-//   channelAccessToken: 'R8avjpIgV0E60LnNhw0cuxqKDW2uYsl1EkKmypPkPPz',
-//   channelSecret: 'YOUR_CHANNEL_SECRET'
-// };
-
 exports.index = async (req, res, next) => {
   try {
     const users = await UserModel.getAllUsers();
@@ -69,7 +64,7 @@ exports.register = async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const role = "member"; 
+    const role = "member";
     await UserModel.createUser(username, email, hashedPassword, role);
 
     return res.status(201).json({
@@ -79,7 +74,6 @@ exports.register = async (req, res, next) => {
     next(error);
   }
 };
-
 
 exports.me = (req, res, next) => {
   const { _id, username, email, role, created_at } = req.user;
@@ -150,15 +144,19 @@ exports.resetPassword = async (req, res, next) => {
     // บันทึกรหัสผ่านใหม่ลงในฐานข้อมูล
     await UserModel.updatePassword(userId, hashedPassword);
     // ส่งข้อความแจ้งเตือนไปยังกลุ่ม Line Notify
-    const lineNotifyToken = "R8avjpIgV0E60LnNhw0cuxqKDW2uYsl1EkKmypPkPPz"; // แทนที่ด้วย Token ของกลุ่ม Line Notify ของคุณ
-    const message = `รหัสผ่านใหม่ของ ${user.username}  \n (${user.email})  \n คือ: ${newPassword}`;
+    // const lineNotifyToken = process.env.LINE_NOTIFY_TOKEN;  // แทนที่ด้วย Token ของกลุ่ม Line Notify ของคุณ
+    // const message = `รหัสผ่านใหม่ของ ${user.username}  \n (${user.email})  \n คือ: ${newPassword}`;
 
-    await axios.post("https://notify-api.line.me/api/notify", { message }, {
-      headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Authorization": `Bearer ${lineNotifyToken}`
-      }
-  });
+    // await axios.post(
+    //   "https://notify-api.line.me/api/notify",
+    //   { message },
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/x-www-form-urlencoded",
+    //       Authorization: `Bearer ${lineNotifyToken}`,
+    //     },
+    //   }
+    // );
 
     return res.status(200).json({
       message: "รีเซ็ตรหัสผ่านเรียบร้อยแล้ว",

@@ -45,7 +45,7 @@ const EggStorage = {
     const eggSizeSummaryJSON = JSON.stringify(eggSizeSummary);
 
     const [result, fields] = await db.query(
-      "INSERT INTO daily_egg_storage (date, eggs_count, egg_size_summary) VALUES (?, ?, ?)",
+      "INSERT INTO daily_egg_storage (date, eggs_count, egg_size_summary) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE eggs_count = VALUES(eggs_count), egg_size_summary = VALUES(egg_size_summary)",
       [date, totalEggsCount, eggSizeSummaryJSON]
     );
     return result;
@@ -69,16 +69,24 @@ const EggStorage = {
     dailyEggData.forEach(({ egg_size, eggs_count }) => {
       if (eggSizeSummary[egg_size]) {
         eggSizeSummary[egg_size] += eggs_count;
+        eggSizeSummary[egg_size].egg_panel = Math.floor(eggSizeSummary[egg_size].eggs_count / 30);
       } else {
-        eggSizeSummary[egg_size] = eggs_count;
+        eggSizeSummary[egg_size] = {
+          egg_size,
+          eggs_count,
+          egg_panel: Math.floor(eggs_count / 30),
+          ENF: eggs_count % 30,
+      };
       }
+    
     });
 
     // สร้างคำสั่ง SQL เพื่ออัปเดตข้อมูลในตาราง daily_egg_storage
     const sql = `UPDATE daily_egg_storage SET egg_size_summary = ?, eggs_count = ? WHERE date = ?`;
     const values = [JSON.stringify(eggSizeSummary), totalEggsCount, date];
-
+    
     const [result, fields] = await db.query(sql, values);
+    
     return result.changedRows;
   },
 
@@ -86,6 +94,10 @@ const EggStorage = {
     const [rows, fields] = await db.query("SELECT * FROM `daily_egg_storage`");
     return rows;
   },
+  getByDateDailyEggStorage: async function (date) {
+    const [rows, fields] = await db.query("SELECT * FROM `daily_egg_storage` WHERE date = ?", [date]);
+    return rows;
+}
 };
 
 module.exports = EggStorage;

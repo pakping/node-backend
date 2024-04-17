@@ -1,6 +1,5 @@
 // controllers/eggStorageController.js
-const cron = require("node-cron");
-const EggStorage = require("../models/EggStorage");
+const eggStorage = require("../models/eggstorage");
 const House = require("../models/house");
 const db = require("../config/index");
 exports.create = async (req, res, next) => {
@@ -8,7 +7,7 @@ exports.create = async (req, res, next) => {
     const { houseId, eggsCount, eggSize } = req.body;
     // console.log(req.json());
     // ทำการสร้างข้อมูลในตาราง EggStorage โดยไม่รวมเวลาและวันที่
-    const insertId = await EggStorage.create(houseId, eggsCount, eggSize);
+    const insertId = await eggStorage.create(houseId, eggsCount, eggSize);
     res.status(201).json({
       message: "Egg storage record created successfully",
       id: insertId,
@@ -22,7 +21,7 @@ exports.create = async (req, res, next) => {
 
 exports.getAll = async (req, res, next) => {
   try {
-    const eggStorageData = await EggStorage.getAll();
+    const eggStorageData = await eggStorage.getAll();
     const eggStorageWithHouseData = await Promise.all(
       eggStorageData.map(async (storage) => {
         const houseId = storage.house_id;
@@ -55,9 +54,28 @@ exports.getAll = async (req, res, next) => {
 exports.getByDate = async (req, res, next) => {
   try {
     const created_at = req.params.date; // แก้เป็น created_at
-    const data = await EggStorage.getByDate(created_at); // แก้เป็น created_at
+    const data = await eggStorage.getByDate(created_at); // แก้เป็น created_at
+    const eggStorageWithHouseData = await Promise.all(
+      data.map(async (storage) => {
+        const houseId = storage.house_id;
+        // เรียกใช้ฐานข้อมูลเพื่อค้นหาข้อมูลของบ้านตาม houseId
+        const [houseRows] = await db.query(
+          "SELECT * FROM houses WHERE id = ?",
+          [houseId]
+        );
+        const houseData = houseRows[0]; // เนื่องจาก houseId เป็น unique ดังนั้นจะมีแค่ record เดียว
+        return {
+          id: storage.id,
+          houseName: houseData.name,
+          eggsCount: storage.eggs_count,
+          eggSize: storage.egg_size,
+          createdAt: storage.created_at,
+          updatedAt: storage.updated_at,
+        };
+      })
+    );
     res.status(200).json({
-      data,
+      eggStorageWithHouseData,
     });
   } catch (error) {
     res.status(500).json({
@@ -72,7 +90,7 @@ exports.createDailyEgg = async () => {
     const todayISODate = today.toISOString().slice(0, 10); // กำหนดรูปแบบวันที่ใน ISO 8601 (YYYY-MM-DD)
 
     // เช็คว่าข้อมูลสำหรับวันนี้ถูกสรุปแล้วหรือยัง
-    const isDailySummaryExist = await EggStorage.isDailySummaryExist(
+    const isDailySummaryExist = await eggStorage.isDailySummaryExist(
       todayISODate
     );
     if (!isDailySummaryExist) {
@@ -93,7 +111,7 @@ exports.createDailyEgg = async () => {
       });
 
       // สรุปข้อมูลและบันทึกลงในตาราง daily_egg_storage
-      await EggStorage.createDailyEgg(todayISODate, dailyEggData);
+      await eggStorage.createDailyEgg(todayISODate, dailyEggData);
 
       console.log(`Summary for ${todayISODate} stored successfully.`);
     } else {
@@ -114,7 +132,7 @@ exports.createDailyEgg = async () => {
       });
       // console.log("dailyEggData", dailyEggData);
       // อัพเดทข้อมูลในตาราง daily_egg_storage
-      await EggStorage.updateDailyEgg(todayISODate, dailyEggData);
+      await eggStorage.updateDailyEgg(todayISODate, dailyEggData);
 
       console.log(`Daily summary updated for ${todayISODate}.`);
     }
@@ -122,7 +140,6 @@ exports.createDailyEgg = async () => {
     console.error("Error occurred while summarizing egg storage:", error);
   }
 };
-// สร้าง Cron Job เมื่อเรียกใช้งาน API นี้
 exports.triggerCronJob = async (req, res) => {
   try {
     exports.createDailyEgg();
@@ -135,8 +152,20 @@ exports.triggerCronJob = async (req, res) => {
 
 exports.getAllDailyEggStorage = async (req, res) => {
   try {
-    const dailyEggStorage = await EggStorage.getAllDailyEggStorage();
-    res.json(dailyEggStorage); 
+    const dailyEggStorage = await eggStorage.getAllDailyEggStorage();
+    res.json(dailyEggStorage);
+  } catch (error) {
+    console.error("Error occurred while fetching daily egg storage:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+exports.getByDateDailyEggStorage = async (req, res) => {
+  try {
+    const date = req.params.date; // เปลี่ยนจาก created_at เป็น date
+    console.log(date);
+    const dailyEggStorage = await eggStorage.getByDateDailyEggStorage(date);
+    res.json(dailyEggStorage);
+    // console.log(date);
   } catch (error) {
     console.error("Error occurred while fetching daily egg storage:", error);
     res.status(500).json({ error: "Internal Server Error" });
