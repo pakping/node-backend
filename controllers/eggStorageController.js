@@ -87,6 +87,7 @@ exports.getByDate = async (req, res, next) => {
 exports.createDailyEgg = async () => {
   try {
     const today = new Date(); // สร้างวัตถุของวันที่ปัจจุบัน
+    today.setHours(today.getHours() + 7);
     const todayISODate = today.toISOString().slice(0, 10); // กำหนดรูปแบบวันที่ใน ISO 8601 (YYYY-MM-DD)
 
     // เช็คว่าข้อมูลสำหรับวันนี้ถูกสรุปแล้วหรือยัง

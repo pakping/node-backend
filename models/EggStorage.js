@@ -75,7 +75,7 @@ const EggStorage = {
           egg_size,
           eggs_count,
           egg_panel: Math.floor(eggs_count / 30),
-          ENF: eggs_count % 30,
+          Less_than_Panel_Eggs: eggs_count % 30,
       };
       }
     
