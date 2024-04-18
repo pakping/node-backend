@@ -1,6 +1,6 @@
 // controllers/eggStockController.js
 const DailyEggStorage = require("../models/dailyEggStorage");
-const EggStock = require("../models/eggStock");
+const EggStock = require("../models/EggStock");
 
 
 

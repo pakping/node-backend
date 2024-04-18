@@ -92,7 +92,7 @@ const EggStock = {
     try {
       // Get all daily egg storage records
       const dailyEggStorage = await DailyEggStorage.getAllDailyEggStorage();
-      console.log('dailyEggStorage :', dailyEggStorage);
+      // console.log('dailyEggStorage :', dailyEggStorage);
 
       // Initialize an object to store updated egg stock data
       const updatedEggStock = {};

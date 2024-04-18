@@ -163,7 +163,7 @@ exports.getAllDailyEggStorage = async (req, res) => {
 exports.getByDateDailyEggStorage = async (req, res) => {
   try {
     const date = req.params.date; // เปลี่ยนจาก created_at เป็น date
-    console.log(date);
+    // console.log(date);
     const dailyEggStorage = await eggStorage.getByDateDailyEggStorage(date);
     res.json(dailyEggStorage);
     // console.log(date);
