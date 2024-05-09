@@ -184,7 +184,7 @@ const RoleRouter = require("./routes/rolecompany");
 const chickenHouse = require("./routes/house");
 const eggStorage = require("./routes/eggStorage");
 const cronJobRoutes = require('./routes/cronJob');
-const EggStockRoutes = require('./routes/eggStock');
+// const EggStockRoutes = require('./routes/eggStock');
 const SellEggRoutes = require('./routes/sellEgg');
 
 app.use("/api/", indexRouter);
@@ -193,5 +193,5 @@ app.use("/api/chackrole", [passportJWT.isLogin], RoleRouter);
 app.use("/api/house", [passportJWT.isLogin], chickenHouse);
 app.use("/api/egg", [passportJWT.isLogin],eggStorage)
 app.use("/api/sell-egg", [passportJWT.isLogin],SellEggRoutes)
-app.use("/api/egg-stock", [passportJWT.isLogin],EggStockRoutes)
+// app.use("/api/egg-stock", [passportJWT.isLogin],EggStockRoutes)
 app.use('/api/cron', [passportJWT.isLogin],cronJobRoutes);
