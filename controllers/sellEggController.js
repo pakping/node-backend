@@ -56,20 +56,17 @@ exports.getSalesSummary = async (req, res) => {
   try {
     // ดึงข้อมูลสรุปยอดขายทั้งหมด
     const totalSalesSummary = await SellEgg.getTotalSalesSummary();
-    console.log('totalSalesSummary :', totalSalesSummary);
 
     // ดึงข้อมูลสรุปยอดขายตามขนาดของไข่
     const salesSummaryBySize = await SellEgg.getSalesSummaryBySize();
 
     // สร้างข้อมูลตามรูปแบบที่ต้องการ
     const formattedData = totalSalesSummary.map((summary, index) => ({
-      
-    
       [`totalSalesSummary-${summary.sale_date}`]: [summary],
-    
+
       salesSummaryBySize: salesSummaryBySize,
     }));
-    
+
     res.status(200).json({
       message: "Success",
       SummarySell: formattedData,
